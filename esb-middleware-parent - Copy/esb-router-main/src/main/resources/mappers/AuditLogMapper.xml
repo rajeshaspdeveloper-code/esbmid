@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.esb.middleware.mapper.AuditLogMapper">
+
+    <!-- Result Map for AuditLog -->
+    <resultMap id="AuditLogResultMap" type="AuditLog">
+        <id property="id" column="id"/>
+        <result property="requestId" column="request_id"/>
+        <result property="correlationId" column="correlation_id"/>
+        <result property="branchCode" column="branch_code"/>
+        <result property="endpoint" column="endpoint"/>
+        <result property="method" column="method"/>
+        <result property="pluginId" column="plugin_id"/>
+        <result property="sourceSystem" column="source_system"/>
+        <result property="sourceIp" column="source_ip"/>
+        <result property="requestPayload" column="request_payload"/>
+        <result property="responsePayload" column="response_payload"/>
+        <result property="status" column="status"/>
+        <result property="statusCode" column="status_code"/>
+        <result property="errorCode" column="error_code"/>
+        <result property="errorMessage" column="error_message"/>
+        <result property="processingTime" column="processing_time"/>
+        <result property="requestTime" column="request_time"/>
+        <result property="responseTime" column="response_time"/>
+        <result property="headers" column="headers"/>
+        <result property="parameters" column="parameters"/>
+        <result property="additionalInfo" column="additional_info"/>
+    </resultMap>
+
+    <!-- Base Column List -->
+    <sql id="Base_Column_List">
+        id, request_id, correlation_id, branch_code, endpoint, method, plugin_id,
+        source_system, source_ip, request_payload, response_payload, status, status_code,
+        error_code, error_message, processing_time, request_time, response_time,
+        headers, parameters, additional_info
+    </sql>
+
+    <!-- Insert audit log -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO audit_log (
+            request_id, correlation_id, branch_code, endpoint, method, plugin_id,
+            source_system, source_ip, request_payload, status, request_time,
+            headers, parameters
+        ) VALUES (
+            #{requestId}, #{correlationId}, #{branchCode}, #{endpoint}, #{method},
+            #{pluginId}, #{sourceSystem}, #{sourceIp}, #{requestPayload}, #{status},
+            #{requestTime}, #{headers}, #{parameters}
+        )
+    </insert>
+
+    <!-- Update audit log -->
+    <update id="update">
+        UPDATE audit_log SET
+            correlation_id = #{correlationId},
+            response_payload = #{responsePayload},
+            status = #{status},
+            status_code = #{statusCode},
+            error_code = #{errorCode},
+            error_message = #{errorMessage},
+            processing_time = #{processingTime},
+            response_time = #{responseTime},
+            additional_info = #{additionalInfo}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Update response information -->
+    <update id="updateResponse">
+        UPDATE audit_log SET
+            response_payload = #{responsePayload},
+            status = #{status},
+            status_code = #{statusCode},
+            error_code = #{errorCode},
+            error_message = #{errorMessage},
+            processing_time = #{processingTime},
+            response_time = #{responseTime}
+        WHERE request_id = #{requestId}
+    </update>
+
+    <!-- Find by request ID -->
+    <select id="findByRequestId" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE request_id = #{requestId}
+    </select>
+
+    <!-- Find by ID -->
+    <select id="findById" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE id = #{id}
+    </select>
+
+    <!-- Find by correlation ID -->
+    <select id="findByCorrelationId" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE correlation_id = #{correlationId}
+        ORDER BY request_time DESC
+    </select>
+
+    <!-- Find by branch code with pagination -->
+    <select id="findByBranchCode" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE branch_code = #{branchCode}
+        ORDER BY request_time DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- Find by endpoint with pagination -->
+    <select id="findByEndpoint" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE endpoint = #{endpoint}
+        ORDER BY request_time DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- Find by date range with pagination -->
+    <select id="findByDateRange" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE request_time BETWEEN #{startDate} AND #{endDate}
+        ORDER BY request_time DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- Find by status with pagination -->
+    <select id="findByStatus" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE status = #{status}
+        ORDER BY request_time DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- Find by plugin ID with pagination -->
+    <select id="findByPluginId" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE plugin_id = #{pluginId}
+        ORDER BY request_time DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- Find recent audit logs -->
+    <select id="findRecent" resultMap="AuditLogResultMap">
+        SELECT TOP(#{limit}) <include refid="Base_Column_List"/>
+        FROM audit_log
+        ORDER BY request_time DESC
+    </select>
+
+    <!-- Find failed transactions with pagination -->
+    <select id="findFailedTransactions" resultMap="AuditLogResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM audit_log
+        WHERE status IN ('ERROR', 'BUSINESS_ERROR')
+        ORDER BY request_time DESC
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- Count total records -->
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(*)
+        FROM audit_log
+    </select>
+
+    <!-- Count by status -->
+    <select id="countByStatus" resultType="long">
+        SELECT COUNT(*)
+        FROM audit_log
+        WHERE status = #{status}
+    </select>
+
+    <!-- Count by date range -->
+    <select id="countByDateRange" resultType="long">
+        SELECT COUNT(*)
+        FROM audit_log
+        WHERE request_time BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <!-- Get average processing time -->
+    <select id="getAverageProcessingTime" resultType="java.lang.Double">
+        SELECT AVG(CAST(processing_time AS FLOAT))
+        FROM audit_log
+        WHERE status = 'SUCCESS'
+          AND processing_time > 0
+          AND request_time >= DATEADD(day, -7, GETDATE())
+    </select>
+
+    <!-- Get processing statistics by date range -->
+    <select id="getProcessingStats" resultType="java.util.HashMap">
+        SELECT 
+            CAST(request_time AS DATE) as date,
+            status,
+            COUNT(*) as count,
+            AVG(CAST(processing_time AS FLOAT)) as avg_time,
+            MIN(processing_time) as min_time,
+            MAX(processing_time) as max_time
+        FROM audit_log
+        WHERE request_time BETWEEN #{startDate} AND #{endDate}
+        GROUP BY CAST(request_time AS DATE), status
+        ORDER BY date DESC, status
+    </select>
+
+    <!-- Delete old logs -->
+    <delete id="deleteOldLogs">
+        DELETE FROM audit_log
+        WHERE request_time &lt; #{beforeDate}
+    </delete>
+
+</mapper>

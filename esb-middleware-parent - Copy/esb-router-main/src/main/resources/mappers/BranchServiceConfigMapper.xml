@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.esb.middleware.mapper.BranchServiceConfigMapper">
+
+    <!-- Result Map for BranchServiceConfig -->
+    <resultMap id="BranchServiceConfigResultMap" type="com.esb.middleware.model.BranchServiceConfig">
+        <id property="id" column="id"/>
+        <result property="branchCode" column="branch_code"/>
+        <result property="serviceId" column="service_id"/>
+        <result property="pluginId" column="plugin_id"/>
+        <result property="targetUrl" column="target_url"/>
+        <result property="serviceEndpoint" column="service_endpoint"/>
+        <result property="esbService" column="esb_service"/>
+        <result property="enabled" column="enabled"/>
+        <result property="timeoutMs" column="timeout_ms"/>
+        <result property="retryCount" column="retry_count"/>
+        <result property="headers" column="headers" typeHandler="com.esb.middleware.handler.JsonTypeHandler"/>
+        <result property="parameters" column="parameters" typeHandler="com.esb.middleware.handler.JsonTypeHandler"/>
+        <result property="createdDate" column="created_date"/>
+        <result property="modifiedDate" column="modified_date"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="modifiedBy" column="modified_by"/>
+    </resultMap>
+
+    <!-- Base Column List -->
+    <sql id="Base_Column_List">
+        id, branch_code, service_id, plugin_id, target_url, service_endpoint, esb_service,
+        enabled, timeout_ms, retry_count, headers, parameters, created_date, modified_date,
+        created_by, modified_by
+    </sql>
+
+    <!-- Find service by branch and service ID -->
+    <select id="findByBranchAndServiceId" resultMap="BranchServiceConfigResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM branch_service_config
+        WHERE branch_code = #{branchCode}
+          AND service_id = #{serviceId}
+          AND enabled = 1
+    </select>
+
+    <!-- Find services by branch -->
+    <select id="findByBranch" resultMap="BranchServiceConfigResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM branch_service_config
+        WHERE branch_code = #{branchCode}
+        ORDER BY service_id
+    </select>
+
+    <!-- Find all enabled services -->
+    <select id="findAllEnabled" resultMap="BranchServiceConfigResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM branch_service_config
+        WHERE enabled = 1
+        ORDER BY branch_code, service_id
+    </select>
+
+    <!-- Find all services -->
+    <select id="findAll" resultMap="BranchServiceConfigResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM branch_service_config
+        ORDER BY branch_code, service_id
+    </select>
+
+    <!-- Find services by plugin ID -->
+    <select id="findByPluginId" resultMap="BranchServiceConfigResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM branch_service_config
+        WHERE plugin_id = #{pluginId}
+        ORDER BY branch_code, service_id
+    </select>
+
+    <!-- Find service by ID -->
+    <select id="findById" resultMap="BranchServiceConfigResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM branch_service_config
+        WHERE id = #{id}
+    </select>
+
+    <!-- Count total services -->
+    <select id="countTotal" resultType="int">
+        SELECT COUNT(*)
+        FROM branch_service_config
+    </select>
+
+    <!-- Count enabled services -->
+    <select id="countEnabled" resultType="int">
+        SELECT COUNT(*)
+        FROM branch_service_config
+        WHERE enabled = 1
+    </select>
+
+    <!-- Find services with pagination -->
+    <select id="findWithPagination" resultMap="BranchServiceConfigResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM branch_service_config
+        ORDER BY id
+        OFFSET #{offset} ROWS
+        FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- Insert service configuration -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO branch_service_config (
+            branch_code, service_id, plugin_id, target_url, service_endpoint, esb_service,
+            enabled, timeout_ms, retry_count, headers, parameters, created_date, modified_date,
+            created_by, modified_by
+        ) VALUES (
+            #{branchCode}, #{serviceId}, #{pluginId}, #{targetUrl}, #{serviceEndpoint},
+            #{esbService}, #{enabled}, #{timeoutMs}, #{retryCount},
+            #{headers, typeHandler=com.esb.middleware.handler.JsonTypeHandler},
+            #{parameters, typeHandler=com.esb.middleware.handler.JsonTypeHandler},
+            #{createdDate}, #{modifiedDate}, #{createdBy}, #{modifiedBy}
+        )
+    </insert>
+
+    <!-- Update service configuration -->
+    <update id="update">
+        UPDATE branch_service_config SET
+            branch_code = #{branchCode},
+            service_id = #{serviceId},
+            plugin_id = #{pluginId},
+            target_url = #{targetUrl},
+            service_endpoint = #{serviceEndpoint},
+            esb_service = #{esbService},
+            enabled = #{enabled},
+            timeout_ms = #{timeoutMs},
+            retry_count = #{retryCount},
+            headers = #{headers, typeHandler=com.esb.middleware.handler.JsonTypeHandler},
+            parameters = #{parameters, typeHandler=com.esb.middleware.handler.JsonTypeHandler},
+            modified_date = #{modifiedDate},
+            modified_by = #{modifiedBy}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Delete service configuration -->
+    <delete id="deleteById">
+        DELETE FROM branch_service_config
+        WHERE id = #{id}
+    </delete>
+
+    <!-- Update service status -->
+    <update id="updateStatus">
+        UPDATE branch_service_config 
+        SET enabled = #{enabled},
+            modified_date = GETDATE()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

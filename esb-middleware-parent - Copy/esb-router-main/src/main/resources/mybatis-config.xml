@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <!-- Global Settings -->
+    <settings>
+        <!-- Enable camel case mapping -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        
+        <!-- Enable caching -->
+        <setting name="cacheEnabled" value="true"/>
+        
+        <!-- Enable lazy loading -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        
+        <!-- Aggressive lazy loading -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+        
+        <!-- Multiple result sets -->
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        
+        <!-- Use column label -->
+        <setting name="useColumnLabel" value="true"/>
+        
+        <!-- Use generated keys -->
+        <setting name="useGeneratedKeys" value="false"/>
+        
+        <!-- Auto mapping behavior -->
+        <setting name="autoMappingBehavior" value="PARTIAL"/>
+        
+        <!-- Auto mapping unknown column behavior -->
+        <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
+        
+        <!-- Default executor type -->
+        <setting name="defaultExecutorType" value="SIMPLE"/>
+        
+        <!-- Default statement timeout -->
+        <setting name="defaultStatementTimeout" value="25000"/>
+        
+        <!-- Default fetch size -->
+        <setting name="defaultFetchSize" value="100"/>
+        
+        <!-- Safe row bounds enabled -->
+        <setting name="safeRowBoundsEnabled" value="false"/>
+        
+        <!-- Map underscore to camel case -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        
+        <!-- Local cache scope -->
+        <setting name="localCacheScope" value="SESSION"/>
+        
+        <!-- JDBC type for null values -->
+        <setting name="jdbcTypeForNull" value="OTHER"/>
+        
+        <!-- Lazy load trigger methods -->
+        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+    </settings>
+
+    <!-- Type Aliases -->
+    <typeAliases>
+        <!-- Model Aliases -->
+        <typeAlias alias="RouteConfig" type="com.esb.middleware.model.RouteConfig"/>
+        <typeAlias alias="PluginConfigModel" type="com.esb.middleware.model.PluginConfigModel"/>
+        <typeAlias alias="AuditLog" type="com.esb.middleware.model.AuditLog"/>
+        <typeAlias alias="EsbRequest" type="com.esb.middleware.model.EsbRequest"/>
+        <typeAlias alias="EsbResponse" type="com.esb.middleware.model.EsbResponse"/>
+        
+        <!-- Common Java Types -->
+        <typeAlias alias="HashMap" type="java.util.HashMap"/>
+        <typeAlias alias="LinkedHashMap" type="java.util.LinkedHashMap"/>
+        <typeAlias alias="ArrayList" type="java.util.ArrayList"/>
+        <typeAlias alias="LinkedList" type="java.util.LinkedList"/>
+    </typeAliases>
+
+    <!-- Type Handlers -->
+    <typeHandlers>
+        <!-- JSON Type Handler for Map fields -->
+        <typeHandler handler="com.esb.middleware.handler.JsonTypeHandler" 
+                     javaType="java.util.Map"/>
+    </typeHandlers>
+
+    <!-- Environments will be configured by Spring -->
+    <!-- Mappers will be configured by Spring -->
+
+</configuration>

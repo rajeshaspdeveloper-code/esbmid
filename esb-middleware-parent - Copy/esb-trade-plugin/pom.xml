@@ -1,0 +1,82 @@
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.esb</groupId>
+    <artifactId>esb-middleware-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+   
+  <artifactId>esb-trade-plugin</artifactId>
+    <packaging>jar</packaging>
+    <name>ESB Trade Plugin</name>
+    <description>Trade ESB Plugin for handling trade operations</description>
+
+    <dependencies>
+        <!-- Plugin Interface -->
+        <dependency>
+            <groupId>com.esb</groupId>
+            <artifactId>esb-plugin-interface</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <!-- JSON Processing -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- HTTP Client -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
+
+        <!-- Utilities -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>esb-trade-plugin-${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            
+            <!-- Add manifest information -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Plugin-Id>trade-plugin</Plugin-Id>
+                            <Plugin-Name>Trade ESB Plugin</Plugin-Name>
+                            <Plugin-Version>${project.version}</Plugin-Version>
+                            <Plugin-Main-Class>com.esb.plugin.trade.TradePlugin</Plugin-Main-Class>
+                            <Plugin-Description>Plugin for handling trade-related ESB operations</Plugin-Description>
+                            <Plugin-Author>ESB Team</Plugin-Author>
+                            <Plugin-Vendor>YourCompany</Plugin-Vendor>
+                            <Plugin-Supported-Endpoints>trade-inquiry,trade-booking,trade-confirmation</Plugin-Supported-Endpoints>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
